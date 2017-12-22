@@ -40,7 +40,7 @@ class DaySymbolsView: UIView {
 
   func configure() {
     let daySymbols = calendar.shortWeekdaySymbols
-      .map { String($0.characters.first!)}
+      .map { String($0.first!)}
     let weekendMask = [true] + [Bool](repeating: false, count: 5) + [true]
     var weekDays = Array(zip(daySymbols, weekendMask))
 
