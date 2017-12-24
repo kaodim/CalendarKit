@@ -28,6 +28,7 @@ public class DayHeaderView: UIView {
   lazy var daySymbolsView: DaySymbolsView = DaySymbolsView(daysInWeek: self.daysInWeek)
   let pagingScrollView = PagingScrollView<DaySelector>()
   lazy var swipeLabelView: SwipeLabelView = SwipeLabelView()
+  lazy var indicator: DateStripeIndicator = DateStripeIndicator()
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -87,6 +88,14 @@ public class DayHeaderView: UIView {
     daySymbolsView.anchorAndFillEdge(.top, xPad: 0, yPad: 0, otherSize: daySymbolsViewHeight)
     pagingScrollView.alignAndFillWidth(align: .underCentered, relativeTo: daySymbolsView, padding: 0, height: pagingScrollViewHeight)
     swipeLabelView.anchorAndFillEdge(.bottom, xPad: 0, yPad: 10, otherSize: swipeLabelViewHeight)
+    updateIndicatorOrigin(selectedIndex: 0)
+    addSubview(indicator)
+  }
+
+  private func updateIndicatorOrigin(selectedIndex: Int) {
+    let itemWidth = bounds.width / 7
+    let itemOriginX = itemWidth * CGFloat(selectedIndex)
+    indicator.frame = CGRect(x: itemOriginX, y: bounds.height - 2.0, width: itemWidth, height: 2.0)
   }
 }
 
@@ -116,11 +125,23 @@ extension DayHeaderView: DayViewStateUpdating {
     } else {
       centerDaySelector.selectedDate = newDate
       currentWeekdayIndex = daysFrom
+      updateIndicatorOrigin(selectedIndex: daysFrom)
     }
   }
 }
 
 extension DayHeaderView: PagingScrollViewDelegate {
+
+  func scrollviewWillChangeIndex() {
+    /// Transformation effect
+    indicator.alpha = 0
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+      UIView.animate(withDuration: 0.2, animations: { [weak self] in
+        self?.indicator.alpha = 1.0
+      })
+    }
+  }
+
   func scrollviewDidScrollToViewAtIndex(_ index: Int) {
     let activeView = pagingScrollView.reusableViews[index]
     activeView.selectedIndex = currentWeekdayIndex

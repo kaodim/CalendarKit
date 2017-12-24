@@ -2,6 +2,11 @@ import UIKit
 
 protocol PagingScrollViewDelegate: class {
   func scrollviewDidScrollToViewAtIndex(_ index: Int)
+  func scrollviewWillChangeIndex()
+}
+
+extension PagingScrollViewDelegate {
+  func scrollviewWillChangeIndex() { }
 }
 
 protocol ReusableView: class {
@@ -103,6 +108,10 @@ class PagingScrollView<T: UIView>: UIScrollView, UIScrollViewDelegate where T: R
       viewDelegate?.scrollviewDidScrollToViewAtIndex(Int(currentScrollViewPage))
       previousPage = currentIndex
     }
+  }
+
+  func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    viewDelegate?.scrollviewWillChangeIndex()
   }
 
   func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
