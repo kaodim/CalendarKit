@@ -20,6 +20,7 @@ class DaySymbolsView: UIView {
   init(daysInWeek: Int = 7) {
     super.init(frame: CGRect.zero)
     self.daysInWeek = daysInWeek
+    calendar.locale = style.locale
     initializeViews()
   }
 
@@ -33,26 +34,33 @@ class DaySymbolsView: UIView {
     configure()
   }
 
+  func prepareForReuse() {
+    /// Set to default not today color
+    labels[0].textColor = style.notTodayColor
+  }
+
   func updateStyle(_ newStyle: DaySymbolsStyle) {
     style = newStyle.copy() as! DaySymbolsStyle
     configure()
   }
 
-  func configure() {
-    let daySymbols = calendar.shortWeekdaySymbols
-      .map { String($0.first!)}
+  func configure(isOnCurrentWeek: Bool = true) {
+    let daySymbols = calendar.veryShortWeekdaySymbols
     let weekendMask = [true] + [Bool](repeating: false, count: 5) + [true]
     var weekDays = Array(zip(daySymbols, weekendMask))
-
     weekDays.shift(calendar.firstWeekday - 1)
 
     for (index, label) in labels.enumerated() {
-      label.text = weekDays[index].0
-      label.textColor = weekDays[index].1 ? style.weekendColor : style.weekDayColor
       label.font = style.font
+      label.text = weekDays[index].0
+      /// Check if on current week & on first index.
+      if isOnCurrentWeek, (index == 0) {
+        label.textColor = style.todayColor
+      } else {
+        label.textColor = style.notTodayColor
+      }
     }
   }
-
 
   override func layoutSubviews() {
     let labelsCount = CGFloat(labels.count)

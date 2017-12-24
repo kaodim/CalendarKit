@@ -28,6 +28,10 @@ class DateLabel: UILabel {
     configure()
   }
 
+  override func layoutSubviews() {
+    layer.cornerRadius = bounds.height / 2
+  }
+
   func configure() {
     isUserInteractionEnabled = true
     textAlignment = .center
@@ -40,24 +44,23 @@ class DateLabel: UILabel {
   }
 
   func updateState() {
-    let today = date.isToday
-    font = selected ? style.todayFont : style.font
-    textColor = today ? style.todayTextColor : style.textColor
+    let isPreviousDay: Bool = date.isEarlier(than: Date()) && (text != Date().format(with: "dd"))
+    if isPreviousDay {
+      textColor = style.previousDayTextColor
+      font = style.inactiveFont
+    } else {
+      textColor = date.isToday ? style.todayTextColor : style.textColor
+      font = selected ? style.activeFont : style.inactiveFont
+    }
     backgroundColor = style.backgroundColor
   }
 
   func animate(){
-    UIView.transition(with: self,
-                      duration: 0.4,
-                      options: .transitionCrossDissolve,
-                      animations: {
-                        self.updateState()
-    }, completion: nil)
+    UIView.transition(with: self, duration: 0.4, options: .transitionCrossDissolve, animations: {
+      self.updateState()
+    })
   }
 
-  override func layoutSubviews() {
-    layer.cornerRadius = bounds.height / 2
-  }
   override func tintColorDidChange() {
     updateState()
   }

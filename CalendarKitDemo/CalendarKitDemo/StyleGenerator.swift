@@ -12,12 +12,10 @@ struct StyleGenerator {
     let white = UIColor.white
 
     let selector = DaySelectorStyle()
-
     selector.textColor = white
 
     let daySymbols = DaySymbolsStyle()
-    daySymbols.weekDayColor = white
-    daySymbols.weekendColor = light
+    daySymbols.notTodayColor = white
 
     let swipeLabel = SwipeLabelStyle()
     swipeLabel.textColor = white

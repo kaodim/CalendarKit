@@ -24,8 +24,8 @@ public class DayHeaderView: UIView {
   var pagingScrollViewHeight: CGFloat = 30
 
   lazy var daySymbolsView: DaySymbolsView = DaySymbolsView(daysInWeek: self.daysInWeek)
-  let pagingScrollView = PagingScrollView<DaySelector>()
   lazy var indicator: DateStripeIndicator = DateStripeIndicator()
+  let pagingScrollView = PagingScrollView<DaySelector>()
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -66,10 +66,8 @@ public class DayHeaderView: UIView {
   }
 
   func beginningOfWeek(_ date: Date) -> Date {
-    return calendar.date(from: DateComponents(calendar: calendar,
-                                              year: date.year,
-                                              weekday: calendar.firstWeekday,
-                                              weekOfYear: date.weekOfYear))!
+    let component = DateComponents(calendar: calendar, year: date.year, weekday: calendar.firstWeekday, weekOfYear: date.weekOfYear)
+    return calendar.date(from: component)!
   }
 
   public func updateStyle(_ newStyle: DayHeaderStyle) {
@@ -87,12 +85,12 @@ public class DayHeaderView: UIView {
     pagingScrollView.contentSize = CGSize(width: bounds.size.width * CGFloat(pagingScrollView.reusableViews.count), height: 0)
     daySymbolsView.anchorAndFillEdge(.top, xPad: 0, yPad: 0, otherSize: daySymbolsViewHeight)
     pagingScrollView.alignAndFillWidth(align: .underCentered, relativeTo: daySymbolsView, padding: 0, height: pagingScrollViewHeight)
-    updateIndicatorOrigin(selectedIndex: 0)
+    updateIndicatorPosition(selectedIndex: 0)
     addSubview(indicator)
   }
 
-  private func updateIndicatorOrigin(selectedIndex: Int) {
-    let itemWidth = bounds.width / 7
+  private func updateIndicatorPosition(selectedIndex: Int) {
+    let itemWidth = bounds.width / CGFloat(daysInWeek)
     let itemOriginX = itemWidth * CGFloat(selectedIndex)
     indicator.frame = CGRect(x: itemOriginX, y: bounds.height - 2.5, width: itemWidth, height: 2.5)
   }
@@ -114,25 +112,35 @@ extension DayHeaderView: DayViewStateUpdating {
     let newStartDate = beginningOfWeek(newDate)
 
     if daysFrom < 0 {
+      /// Swipe main content to the previous 7 days.
+      /// Move 1 day backward before today on previous 7 days.
       pagingScrollView.reusableViews[0].startDate = newStartDate
       currentWeekdayIndex = abs(daysInWeek + daysFrom % daysInWeek) % daysInWeek
       pagingScrollView.scrollBackward()
     } else if daysFrom > daysInWeek - 1 {
+      /// Swipe main content to the next 7 days.
+      /// Move 1 day forward after last day in current 7 days.
       pagingScrollView.reusableViews[2].startDate = newStartDate
       currentWeekdayIndex = daysFrom % daysInWeek
       pagingScrollView.scrollForward()
     } else {
+      /// Move to particulary date within current 7 days,
+      /// by scrolling main content or select the date in header.
+      /// or scroll directly the header to any week.
       centerDaySelector.selectedDate = newDate
       currentWeekdayIndex = daysFrom
-      updateIndicatorOrigin(selectedIndex: daysFrom)
     }
+    /// Update current indicator stripe, for any date changes.
+    updateIndicatorPosition(selectedIndex: currentWeekdayIndex)
   }
 }
 
 extension DayHeaderView: PagingScrollViewDelegate {
 
   func scrollviewWillChangeIndex() {
-    /// Transformation effect
+    /// Prepare changes for day symbol style
+    daySymbolsView.prepareForReuse()
+    /// Transformation change to stripe indicator position
     indicator.alpha = 0
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
       UIView.animate(withDuration: 0.2, animations: { [weak self] in
@@ -152,5 +160,11 @@ extension DayHeaderView: PagingScrollViewDelegate {
     rightView.startDate = activeView.startDate.add(TimeChunk.dateComponents(weeks: 1))
 
     state?.client(client: self, didMoveTo: activeView.selectedDate!)
+
+    /// Update date symbols for weekly content changing.
+    /// check if the 1st day of content is today.
+    let firstDayCurrentWeek = beginningOfWeek(Date())
+    let isOnCurrentWeek = firstDayCurrentWeek.compare(activeView.startDate) == .orderedSame
+    daySymbolsView.configure(isOnCurrentWeek: isOnCurrentWeek)
   }
 }
