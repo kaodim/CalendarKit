@@ -9,50 +9,25 @@ enum SelectedStyle {
 
 class ExampleController: DayViewController, DatePickerControllerDelegate {
 
-  var data = [["Breakfast at Tiffany's",
-               "New York, 5th avenue"],
+  var data = [
+    ["Breakfast at Tiffany's", "New York, 5th avenue"],
+    ["Workout", "Tufteparken"],
+    ["Meeting with Alex", "Home", "Oslo, Tjuvholmen"],
+    ["Beach Volleyball", "Ipanema Beach", "Rio De Janeiro"],
+    ["WWDC", "Moscone West Convention Center", "747 Howard St"],
+    ["Google I/O", "Shoreline Amphitheatre", "One Amphitheatre Parkway"],
+    ["✈️️ to Svalbard ❄️️❄️️❄️️❤️️", "Oslo Gardermoen"],
+    ["💻📲 Developing CalendarKit", "🌍 Worldwide"],
+    ["Software Development Lecture", "Mikpoli MB310", "Craig Federighi"]
+  ]
 
-              ["Workout",
-               "Tufteparken"],
-
-              ["Meeting with Alex",
-               "Home",
-               "Oslo, Tjuvholmen"],
-
-              ["Beach Volleyball",
-               "Ipanema Beach",
-               "Rio De Janeiro"],
-
-              ["WWDC",
-               "Moscone West Convention Center",
-               "747 Howard St"],
-
-              ["Google I/O",
-               "Shoreline Amphitheatre",
-               "One Amphitheatre Parkway"],
-
-              ["✈️️ to Svalbard ❄️️❄️️❄️️❤️️",
-               "Oslo Gardermoen"],
-
-              ["💻📲 Developing CalendarKit",
-               "🌍 Worldwide"],
-
-              ["Software Development Lecture",
-               "Mikpoli MB310",
-               "Craig Federighi"],
-
-              ]
-
-  var colors = [UIColor.blue,
-                UIColor.yellow,
-                UIColor.green,
-                UIColor.red]
+  var colors = [UIColor.blue, UIColor.yellow, UIColor.green, UIColor.red]
 
   var currentStyle = SelectedStyle.light
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    title = "CalendarKit Demo"
+    title = "Demo"
     navigationItem.leftBarButtonItem = UIBarButtonItem(
       title: "Dark",
       style: .plain,
@@ -73,7 +48,20 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
     )
     navigationItem.rightBarButtonItems = [todayItem, changeDateItem]
     navigationController?.navigationBar.isTranslucent = false
-    dayView.autoScrollToFirstEvent = true
+
+    let calendarStyle = CalendarStyle()
+    calendarStyle.header.backgroundColor = .white
+    calendarStyle.header.daySymbols.todayColor = .red
+    calendarStyle.header.daySymbols.font = UIFont.systemFont(ofSize: 15.0)
+    calendarStyle.header.daySelector.todayTextColor = .red
+    calendarStyle.header.daySelector.activeFont = UIFont.systemFont(ofSize: 18.0)
+    calendarStyle.header.daySelector.inactiveFont = UIFont.boldSystemFont(ofSize: 18.0)
+    calendarStyle.header.stripeIndicator.color = .red
+    calendarStyle.timeline.timeIndicator.color = .red
+    calendarStyle.timeline.lineColor = .lightGray
+    calendarStyle.timeline.font = UIFont.boldSystemFont(ofSize: 11.0)
+    
+    updateStyle(calendarStyle)
     reloadData()
   }
 
@@ -93,7 +81,9 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
     updateStyle(style)
     navigationItem.leftBarButtonItem!.title = title
     navigationController?.navigationBar.barTintColor = style.header.backgroundColor
-    navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor:style.header.swipeLabel.textColor]
+    navigationController?.navigationBar.titleTextAttributes = [
+      NSAttributedStringKey.foregroundColor:style.header.swipeLabel.textColor
+    ]
     reloadData()
   }
 
@@ -117,7 +107,7 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
     controller.dismiss(animated: true, completion: nil)
   }
 
-  // MARK: EventDataSource
+  // MARK: - EventDataSource
 
   override func eventsForDate(_ date: Date) -> [EventDescriptor] {
     var date = date.add(TimeChunk.dateComponents(hours: Int(arc4random_uniform(10) + 5)))
@@ -126,9 +116,10 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
     for _ in 0...5 {
       let event = Event()
       let duration = Int(arc4random_uniform(160) + 60)
-      let datePeriod = TimePeriod(beginning: date,
-                                  chunk: TimeChunk.dateComponents(minutes: duration))
-
+      let datePeriod = TimePeriod(
+        beginning: date,
+        chunk: TimeChunk.dateComponents(minutes: duration)
+      )
       event.datePeriod = datePeriod
       var info = data[Int(arc4random_uniform(UInt32(data.count)))]
       info.append("\(datePeriod.beginning!.format(with: "dd MMM"))")
@@ -143,7 +134,7 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
         event.textColor = textColorForEventInDarkTheme(baseColor: event.color)
         event.backgroundColor = event.color.withAlphaComponent(0.6)
       }
-      
+
       events.append(event)
 
       let nextOffset = Int(arc4random_uniform(250) + 40)
@@ -159,7 +150,7 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
     return UIColor(hue: h, saturation: s * 0.3, brightness: b, alpha: a)
   }
 
-  // MARK: DayViewDelegate
+  // MARK: - DatePickerControllerDelegate
 
   override func dayViewDidSelectEventView(_ eventView: EventView) {
     guard let event = eventView.descriptor as? Event, let info = event.userInfo else { return }
@@ -169,13 +160,5 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
   override func dayViewDidLongPressEventView(_ eventView: EventView) {
     guard let event = eventView.descriptor as? Event, let info = event.userInfo else { return }
     print("Event has been selected: \(info)")
-  }
-
-  override func dayView(dayView: DayView, willMoveTo date: Date) {
-//    print("DayView = \(dayView) will move to: \(date)")
-  }
-  
-  override func dayView(dayView: DayView, didMoveTo date: Date) {
-//    print("DayView = \(dayView) did move to: \(date)")
   }
 }

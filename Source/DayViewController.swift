@@ -4,6 +4,7 @@ import DateToolsSwift
 open class DayViewController: UIViewController, EventDataSource, DayViewDelegate {
 
   public lazy var dayView: DayView = DayView()
+  public var autoScrollToFirstEvent: Bool = true
 
   override open func viewDidLoad() {
     super.viewDidLoad()
@@ -17,6 +18,7 @@ open class DayViewController: UIViewController, EventDataSource, DayViewDelegate
 
   open override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
+    dayView.autoScrollToFirstEvent = autoScrollToFirstEvent
     dayView.scrollToFirstEventIfNeeded()
   }
 

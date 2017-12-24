@@ -27,6 +27,7 @@ public class DayHeaderStyle: NSCopying {
   public var daySymbols = DaySymbolsStyle()
   public var daySelector = DaySelectorStyle()
   public var swipeLabel = SwipeLabelStyle()
+  public var stripeIndicator = DayStripeStyle()
   public var backgroundColor = UIColor(white: 247/255, alpha: 1)
   public init() {}
   public func copy(with zone: NSZone? = nil) -> Any {
@@ -34,7 +35,20 @@ public class DayHeaderStyle: NSCopying {
     copy.daySymbols = daySymbols.copy() as! DaySymbolsStyle
     copy.daySelector = daySelector.copy() as! DaySelectorStyle
     copy.swipeLabel = swipeLabel.copy() as! SwipeLabelStyle
+    copy.stripeIndicator = stripeIndicator
     copy.backgroundColor = backgroundColor
+    return copy
+  }
+}
+
+public class DayStripeStyle: NSCopying {
+  public var color: UIColor = UIColor.red
+  public var height: CGFloat = 2.5
+  public init() {}
+  public func copy(with zone: NSZone? = nil) -> Any {
+    let copy = DayStripeStyle()
+    copy.color = color
+    copy.height = height
     return copy
   }
 }

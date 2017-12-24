@@ -90,9 +90,10 @@ public class DayHeaderView: UIView {
   }
 
   private func updateIndicatorPosition(selectedIndex: Int) {
+    let itemHeight = style.stripeIndicator.height
     let itemWidth = bounds.width / CGFloat(daysInWeek)
     let itemOriginX = itemWidth * CGFloat(selectedIndex)
-    indicator.frame = CGRect(x: itemOriginX, y: bounds.height - 2.5, width: itemWidth, height: 2.5)
+    indicator.frame = CGRect(x: itemOriginX, y: bounds.height - itemHeight, width: itemWidth, height: itemHeight)
   }
 }
 

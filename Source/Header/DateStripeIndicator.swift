@@ -9,6 +9,8 @@ import UIKit
 
 internal class DateStripeIndicator: UIView {
 
+  var style = DayStripeStyle()
+
   override init(frame: CGRect) {
     super.init(frame: frame)
     configure()
@@ -20,7 +22,7 @@ internal class DateStripeIndicator: UIView {
   }
 
   func configure() {
-    backgroundColor = UIColor.red
+    backgroundColor = style.color
     isUserInteractionEnabled = true
   }
 }
