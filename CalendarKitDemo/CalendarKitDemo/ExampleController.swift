@@ -53,14 +53,25 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
   override func viewDidLoad() {
     super.viewDidLoad()
     title = "CalendarKit Demo"
-    navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Dark",
-                                                        style: .done,
-                                                        target: self,
-                                                        action: #selector(ExampleController.changeStyle))
-    navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Change Date",
-                                                        style: .plain,
-                                                        target: self,
-                                                        action: #selector(ExampleController.presentDatePicker))
+    navigationItem.leftBarButtonItem = UIBarButtonItem(
+      title: "Dark",
+      style: .plain,
+      target: self,
+      action: #selector(changeStyle)
+    )
+    let changeDateItem = UIBarButtonItem(
+      title: "Change",
+      style: .plain,
+      target: self,
+      action: #selector(presentDatePicker)
+    )
+    let todayItem = UIBarButtonItem(
+      title: "Today",
+      style: .done,
+      target: self,
+      action: #selector(changeToCurrentDate)
+    )
+    navigationItem.rightBarButtonItems = [todayItem, changeDateItem]
     navigationController?.navigationBar.isTranslucent = false
     dayView.autoScrollToFirstEvent = true
     reloadData()
@@ -80,10 +91,15 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
       currentStyle = .Dark
     }
     updateStyle(style)
-    navigationItem.rightBarButtonItem!.title = title
+    navigationItem.leftBarButtonItem!.title = title
     navigationController?.navigationBar.barTintColor = style.header.backgroundColor
     navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor:style.header.swipeLabel.textColor]
     reloadData()
+  }
+
+  @objc func changeToCurrentDate() {
+    let today = Date()
+    dayView.state?.move(to: today)
   }
 
   @objc func presentDatePicker() {
