@@ -15,19 +15,16 @@ public class DayHeaderView: UIView {
     }
     didSet {
       state?.subscribe(client: self)
-      swipeLabelView.state = state
     }
   }
 
   var currentWeekdayIndex = -1
 
   var daySymbolsViewHeight: CGFloat = 20
-  var pagingScrollViewHeight: CGFloat = 40
-  var swipeLabelViewHeight: CGFloat = 20
+  var pagingScrollViewHeight: CGFloat = 30
 
   lazy var daySymbolsView: DaySymbolsView = DaySymbolsView(daysInWeek: self.daysInWeek)
   let pagingScrollView = PagingScrollView<DaySelector>()
-  lazy var swipeLabelView: SwipeLabelView = SwipeLabelView()
   lazy var indicator: DateStripeIndicator = DateStripeIndicator()
 
   override init(frame: CGRect) {
@@ -43,11 +40,15 @@ public class DayHeaderView: UIView {
   }
 
   func configure() {
-    [daySymbolsView, pagingScrollView, swipeLabelView].forEach {
+    [daySymbolsView, pagingScrollView].forEach {
       addSubview($0)
     }
     pagingScrollView.viewDelegate = self
     backgroundColor = style.backgroundColor
+    layer.shadowColor = UIColor.lightGray.cgColor
+    layer.shadowOffset = CGSize(width: 0, height: 1.5)
+    layer.shadowOpacity = 0.5
+    layer.shadowRadius = 1.0
   }
 
   func configurePages(_ selectedDate: Date = Date()) {
@@ -74,7 +75,6 @@ public class DayHeaderView: UIView {
   public func updateStyle(_ newStyle: DayHeaderStyle) {
     style = newStyle.copy() as! DayHeaderStyle
     daySymbolsView.updateStyle(style.daySymbols)
-    swipeLabelView.updateStyle(style.swipeLabel)
     pagingScrollView.reusableViews.forEach { daySelector in
       daySelector.updateStyle(style.daySelector)
     }
@@ -87,7 +87,6 @@ public class DayHeaderView: UIView {
     pagingScrollView.contentSize = CGSize(width: bounds.size.width * CGFloat(pagingScrollView.reusableViews.count), height: 0)
     daySymbolsView.anchorAndFillEdge(.top, xPad: 0, yPad: 0, otherSize: daySymbolsViewHeight)
     pagingScrollView.alignAndFillWidth(align: .underCentered, relativeTo: daySymbolsView, padding: 0, height: pagingScrollViewHeight)
-    swipeLabelView.anchorAndFillEdge(.bottom, xPad: 0, yPad: 10, otherSize: swipeLabelViewHeight)
     updateIndicatorOrigin(selectedIndex: 0)
     addSubview(indicator)
   }
@@ -95,7 +94,7 @@ public class DayHeaderView: UIView {
   private func updateIndicatorOrigin(selectedIndex: Int) {
     let itemWidth = bounds.width / 7
     let itemOriginX = itemWidth * CGFloat(selectedIndex)
-    indicator.frame = CGRect(x: itemOriginX, y: bounds.height - 2.0, width: itemWidth, height: 2.0)
+    indicator.frame = CGRect(x: itemOriginX, y: bounds.height - 2.5, width: itemWidth, height: 2.5)
   }
 }
 

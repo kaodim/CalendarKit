@@ -41,16 +41,9 @@ class DateLabel: UILabel {
 
   func updateState() {
     let today = date.isToday
-    if selected {
-      font = style.todayFont
-      textColor = style.activeTextColor
-      backgroundColor = today ? style.todayActiveBackgroundColor : style.selectedBackgroundColor
-    } else {
-      let notTodayColor = date.isWeekend ? style.weekendTextColor : style.inactiveTextColor
-      font = style.font
-      textColor = today ? style.todayInactiveTextColor : notTodayColor
-      backgroundColor = style.inactiveBackgroundColor
-    }
+    font = selected ? style.todayFont : style.font
+    textColor = today ? style.todayTextColor : style.textColor
+    backgroundColor = style.backgroundColor
   }
 
   func animate(){

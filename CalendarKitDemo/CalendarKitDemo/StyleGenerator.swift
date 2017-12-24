@@ -12,11 +12,8 @@ struct StyleGenerator {
     let white = UIColor.white
 
     let selector = DaySelectorStyle()
-    selector.activeTextColor = white
-    selector.inactiveTextColor = white
-    selector.selectedBackgroundColor = light
-    selector.todayActiveBackgroundColor = orange
-    selector.todayInactiveTextColor = orange
+
+    selector.textColor = white
 
     let daySymbols = DaySymbolsStyle()
     daySymbols.weekDayColor = white

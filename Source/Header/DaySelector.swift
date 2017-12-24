@@ -104,7 +104,7 @@ class DaySelector: UIView, ReusableView {
 
     for (i, label) in dateLabels.enumerated() {
       let frame = CGRect(x: minX + (dateLabelWidth + per) * CGFloat(i), y: 0,
-        width: dateLabelWidth, height: dateLabelWidth)
+        width: dateLabelWidth, height: 25.0)
       label.frame = frame
     }
   }
