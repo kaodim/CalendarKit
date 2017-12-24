@@ -3,8 +3,8 @@ import CalendarKit
 import DateToolsSwift
 
 enum SelectedStyle {
-  case Dark
-  case Light
+  case dark
+  case light
 }
 
 class ExampleController: DayViewController, DatePickerControllerDelegate {
@@ -48,7 +48,7 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
                 UIColor.green,
                 UIColor.red]
 
-  var currentStyle = SelectedStyle.Light
+  var currentStyle = SelectedStyle.light
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -81,14 +81,14 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
     var title: String!
     var style: CalendarStyle!
 
-    if currentStyle == .Dark {
-      currentStyle = .Light
+    if currentStyle == .dark {
+      currentStyle = .light
       title = "Dark"
       style = StyleGenerator.defaultStyle()
     } else {
       title = "Light"
       style = StyleGenerator.darkStyle()
-      currentStyle = .Dark
+      currentStyle = .dark
     }
     updateStyle(style)
     navigationItem.leftBarButtonItem!.title = title
@@ -123,7 +123,7 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
     var date = date.add(TimeChunk.dateComponents(hours: Int(arc4random_uniform(10) + 5)))
     var events = [Event]()
 
-    for i in 0...5 {
+    for _ in 0...5 {
       let event = Event()
       let duration = Int(arc4random_uniform(160) + 60)
       let datePeriod = TimePeriod(beginning: date,
@@ -131,14 +131,15 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
 
       event.datePeriod = datePeriod
       var info = data[Int(arc4random_uniform(UInt32(data.count)))]
-      info.append("\(datePeriod.beginning!.format(with: "dd.MM"))")
+      info.append("\(datePeriod.beginning!.format(with: "dd MMM"))")
       info.append("\(datePeriod.beginning!.format(with: "HH:mm")) - \(datePeriod.end!.format(with: "HH:mm"))")
       event.text = info.reduce("", {$0 + $1 + "\n"})
       event.color = colors[Int(arc4random_uniform(UInt32(colors.count)))]
-      
+      event.userInfo = info
+
       // Event styles are updated independently from CalendarStyle
       // hence the need to specify exact colors in case of Dark style
-      if currentStyle == .Dark {
+      if currentStyle == .dark {
         event.textColor = textColorForEventInDarkTheme(baseColor: event.color)
         event.backgroundColor = event.color.withAlphaComponent(0.6)
       }
@@ -147,7 +148,6 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
 
       let nextOffset = Int(arc4random_uniform(250) + 40)
       date = date.add(TimeChunk.dateComponents(minutes: nextOffset))
-      event.userInfo = String(i)
     }
 
     return events
@@ -162,17 +162,13 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
   // MARK: DayViewDelegate
 
   override func dayViewDidSelectEventView(_ eventView: EventView) {
-    guard let descriptor = eventView.descriptor as? Event else {
-      return
-    }
-    print("Event has been selected: \(descriptor) \(String(describing: descriptor.userInfo))")
+    guard let event = eventView.descriptor as? Event, let info = event.userInfo else { return }
+    print("Event has been selected: \(info)")
   }
 
   override func dayViewDidLongPressEventView(_ eventView: EventView) {
-    guard let descriptor = eventView.descriptor as? Event else {
-      return
-    }
-    print("Event has been longPressed: \(descriptor) \(String(describing: descriptor.userInfo))")
+    guard let event = eventView.descriptor as? Event, let info = event.userInfo else { return }
+    print("Event has been selected: \(info)")
   }
 
   override func dayView(dayView: DayView, willMoveTo date: Date) {

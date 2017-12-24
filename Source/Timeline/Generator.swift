@@ -24,11 +24,11 @@ struct Generator {
       numbers.append(string)
     }
 
-    var am = numbers.map { $0 + " AM" }
-    var pm = numbers.map { $0 + " PM" }
-    am.append("Noon")
+    var am = numbers.map { $0 + "AM" }
+    var pm = numbers.map { $0 + "PM" }
+    am.append("12PM")
     pm.removeFirst()
-    pm.append(am.first!)
+    pm.append("")
     return am + pm
   }
 }

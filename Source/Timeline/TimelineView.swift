@@ -42,9 +42,9 @@ public class TimelineView: UIView, ReusableView {
 
   var style = TimelineStyle()
 
-  var verticalDiff: CGFloat = 45
+  var verticalDiff: CGFloat = 50
   var verticalInset: CGFloat = 10
-  var leftInset: CGFloat = 53
+  var leftInset: CGFloat = 45.0
 
   var horizontalEventInset: CGFloat = 3
 
@@ -56,7 +56,7 @@ public class TimelineView: UIView, ReusableView {
     return bounds.width - leftInset
   }
     
-  var is24hClock = true {
+  var is24hClock = false {
     didSet {
       setNeedsDisplay()
     }
@@ -135,25 +135,16 @@ public class TimelineView: UIView, ReusableView {
   override public func draw(_ rect: CGRect) {
     super.draw(rect)
 
-    var hourToRemoveIndex = -1
-
-    if isToday {
-      let minute = currentTime.minute
-      if minute > 39 {
-        hourToRemoveIndex = currentTime.hour + 1
-      } else if minute < 21 {
-        hourToRemoveIndex = currentTime.hour
-      }
-    }
-
     let mutableParagraphStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
     mutableParagraphStyle.lineBreakMode = .byWordWrapping
-    mutableParagraphStyle.alignment = .right
+    mutableParagraphStyle.alignment = .center
     let paragraphStyle = mutableParagraphStyle.copy() as! NSParagraphStyle
-    
-    let attributes = [NSAttributedStringKey.paragraphStyle: paragraphStyle,
-                      NSAttributedStringKey.foregroundColor: self.style.timeColor,
-                      NSAttributedStringKey.font: style.font] as [NSAttributedStringKey : Any]
+
+    let attributes: [NSAttributedStringKey : Any] = [
+      NSAttributedStringKey.paragraphStyle: paragraphStyle,
+      NSAttributedStringKey.foregroundColor: style.timeColor,
+      NSAttributedStringKey.font: style.font
+    ]
 
     for (i, time) in times.enumerated() {
       let iFloat = CGFloat(i)
@@ -163,24 +154,38 @@ public class TimelineView: UIView, ReusableView {
       context?.setStrokeColor(self.style.lineColor.cgColor)
       context?.setLineWidth(onePixel)
       context?.translateBy(x: 0, y: 0.5)
-      let x: CGFloat = 53
-      let y = verticalInset + iFloat * verticalDiff
+
+      /// Draw horizontal line
+      let targetY = verticalInset + iFloat * verticalDiff
       context?.beginPath()
-      context?.move(to: CGPoint(x: x, y: y))
-      context?.addLine(to: CGPoint(x: (bounds).width, y: y))
+      context?.move(to: CGPoint(x: 0, y: targetY))
+      context?.addLine(to: CGPoint(x: (bounds).width, y: targetY))
       context?.strokePath()
       context?.restoreGState()
 
-      if i == hourToRemoveIndex { continue }
-        
       let fontSize = style.font.pointSize
-      let timeRect = CGRect(x: 2, y: iFloat * verticalDiff + verticalInset - 7,
-                            width: leftInset - 8, height: fontSize + 2)
-
+      let timeRect = CGRect(
+        x: 0,
+        y: iFloat * verticalDiff + verticalInset + 5.0,
+        width: leftInset - 8,
+        height: fontSize + 2
+      )
       let timeString = NSString(string: time)
-
       timeString.draw(in: timeRect, withAttributes: attributes)
     }
+
+    /// Draw vertical line
+    let context = UIGraphicsGetCurrentContext()
+    context!.interpolationQuality = .none
+    context?.saveGState()
+    context?.setStrokeColor(self.style.lineColor.cgColor)
+    context?.setLineWidth(onePixel)
+    context?.translateBy(x: 0, y: 0.5)
+    context?.beginPath()
+    context?.move(to: CGPoint(x: leftInset, y: verticalInset))
+    context?.addLine(to: CGPoint(x: leftInset, y: bounds.height - verticalInset))
+    context?.strokePath()
+    context?.restoreGState()
   }
 
   override public func layoutSubviews() {
@@ -197,7 +202,7 @@ public class TimelineView: UIView, ReusableView {
       bringSubview(toFront: nowLine)
       nowLine.alpha = 1
       let size = CGSize(width: bounds.size.width, height: 20)
-      let rect = CGRect(origin: CGPoint.zero, size: size)
+      let rect = CGRect(origin: .zero, size: size)
       nowLine.date = currentTime
       nowLine.frame = rect
       nowLine.center.y = dateToY(currentTime)

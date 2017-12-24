@@ -8,9 +8,8 @@ open class DayViewController: UIViewController, EventDataSource, DayViewDelegate
   override open func viewDidLoad() {
     super.viewDidLoad()
     self.edgesForExtendedLayout = UIRectEdge()
-    view.addSubview(dayView)
     view.tintColor = UIColor.red
-
+    view.addSubview(dayView)
     dayView.dataSource = self
     dayView.delegate = self
     dayView.reloadData()
@@ -21,8 +20,27 @@ open class DayViewController: UIViewController, EventDataSource, DayViewDelegate
     dayView.scrollToFirstEventIfNeeded()
   }
 
+  open override func viewWillLayoutSubviews() {
+    super.viewWillLayoutSubviews()
+    if #available(iOS 11.0, *) {
+      NSLayoutConstraint.activate([
+        dayView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+        dayView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        dayView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+        dayView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
+    } else {
+      NSLayoutConstraint.activate([
+        dayView.topAnchor.constraint(equalTo: view.topAnchor),
+        dayView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        dayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        dayView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+      ])
+    }
+  }
   open override func viewDidLayoutSubviews() {
-    dayView.fillSuperview()
+    super.viewDidLayoutSubviews()
+
   }
 
   open func reloadData() {

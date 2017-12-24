@@ -100,7 +100,7 @@ public class TimelineStyle: NSCopying {
   public var lineColor = UIColor.lightGray
   public var backgroundColor = UIColor.white
   public var font = UIFont.boldSystemFont(ofSize: 11)
-  public var dateStyle : DateStyle = .system
+  public var dateStyle : DateStyle = .twelveHour
   public init() {}
   public func copy(with zone: NSZone? = nil) -> Any {
     let copy = TimelineStyle()
@@ -117,7 +117,7 @@ public class TimelineStyle: NSCopying {
 public class CurrentTimeIndicatorStyle: NSCopying {
   public var color = UIColor.red
   public var font = UIFont.systemFont(ofSize: 11)
-  public var dateStyle : DateStyle = .system
+  public var dateStyle : DateStyle = .twelveHour
   public init() {}
   public func copy(with zone: NSZone? = nil) -> Any {
     let copy = CurrentTimeIndicatorStyle()

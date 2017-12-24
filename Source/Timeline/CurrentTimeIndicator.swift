@@ -4,7 +4,7 @@ import Neon
 class CurrentTimeIndicator: UIView {
     
   let padding : CGFloat = 5
-  var leftInset: CGFloat = 53
+  var leftInset: CGFloat = 45.0
 
   /// Determines if times should be displayed in a 24 hour format. Defaults to the current locale's setting
   var is24hClock : Bool = true {
@@ -36,7 +36,7 @@ class CurrentTimeIndicator: UIView {
   }
 
   func configure() {
-    [timeLabel, circle, line].forEach {
+    [timeLabel, line, circle].forEach {
       addSubview($0)
     }
     
@@ -57,17 +57,16 @@ class CurrentTimeIndicator: UIView {
   }
     
   func updateDate() {
-    let dateFormat = is24hClock ? "HH:mm" : "h:mm a"
-    timeLabel.text = date.format(with: dateFormat)
+    timeLabel.text = nil
     timeLabel.sizeToFit()
     setNeedsLayout()
   }
 
   override func layoutSubviews() {
-    line.frame = CGRect(x: leftInset - padding, y: bounds.height / 2, width: bounds.width, height: 1)
+    line.frame = CGRect(x: leftInset, y: bounds.height / 2, width: bounds.width, height: 2.5)
 
-    circle.frame = CGRect(x: leftInset + 1, y: 0, width: 6, height: 6)
-    circle.center.y = line.center.y
+    circle.frame = CGRect(x: leftInset, y: 0, width: 8.0, height: 8.0)
+    circle.center = CGPoint(x: leftInset, y: line.center.y)
     circle.layer.cornerRadius = circle.bounds.height / 2
   }
 

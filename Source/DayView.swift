@@ -68,6 +68,7 @@ public class DayView: UIView {
 
   override public init(frame: CGRect) {
     super.init(frame: frame)
+    translatesAutoresizingMaskIntoConstraints = false
     configure()
   }
 
