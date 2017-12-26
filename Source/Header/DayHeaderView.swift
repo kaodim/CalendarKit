@@ -85,7 +85,7 @@ public class DayHeaderView: UIView {
     pagingScrollView.contentSize = CGSize(width: bounds.size.width * CGFloat(pagingScrollView.reusableViews.count), height: 0)
     daySymbolsView.anchorAndFillEdge(.top, xPad: 0, yPad: 0, otherSize: daySymbolsViewHeight)
     pagingScrollView.alignAndFillWidth(align: .underCentered, relativeTo: daySymbolsView, padding: 0, height: pagingScrollViewHeight)
-    updateIndicatorPosition(selectedIndex: 0)
+    updateIndicatorPosition(selectedIndex: currentWeekdayIndex)
     addSubview(indicator)
   }
 
@@ -140,7 +140,7 @@ extension DayHeaderView: PagingScrollViewDelegate {
 
   func scrollviewWillChangeIndex() {
     /// Prepare changes for day symbol style
-    daySymbolsView.prepareForReuse()
+    // daySymbolsView.prepareForReuse()
     /// Transformation change to stripe indicator position
     indicator.alpha = 0
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -164,8 +164,9 @@ extension DayHeaderView: PagingScrollViewDelegate {
 
     /// Update date symbols for weekly content changing.
     /// check if the 1st day of content is today.
+    /*
     let firstDayCurrentWeek = beginningOfWeek(Date())
     let isOnCurrentWeek = firstDayCurrentWeek.compare(activeView.startDate) == .orderedSame
-    daySymbolsView.configure(isOnCurrentWeek: isOnCurrentWeek)
+    daySymbolsView.configure(isOnCurrentWeek: isOnCurrentWeek)*/
   }
 }

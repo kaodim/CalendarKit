@@ -53,12 +53,14 @@ class DaySymbolsView: UIView {
     for (index, label) in labels.enumerated() {
       label.font = style.font
       label.text = weekDays[index].0
+      label.textColor = style.notTodayColor
+      /*
       /// Check if on current week & on first index.
       if isOnCurrentWeek, (index == 0) {
         label.textColor = style.todayColor
       } else {
         label.textColor = style.notTodayColor
-      }
+      }*/
     }
   }
 
