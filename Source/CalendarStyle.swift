@@ -6,6 +6,9 @@ public enum DateStyle {
     
     ///Times should be shown in the 24 hour format
     case twentyFourHour
+
+    /// Times should be shown in the 17 hour format, from 07.00 to 23.00.
+    case sixteenHour
     
     ///Times should be shown according to the user's system preference.
     case system
@@ -114,7 +117,7 @@ public class TimelineStyle: NSCopying {
   public var lineColor = UIColor.lightGray
   public var backgroundColor = UIColor.white
   public var font = UIFont.boldSystemFont(ofSize: 11)
-  public var dateStyle : DateStyle = .twelveHour
+  public var dateStyle : DateStyle = .sixteenHour
   public init() {}
   public func copy(with zone: NSZone? = nil) -> Any {
     let copy = TimelineStyle()

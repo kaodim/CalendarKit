@@ -160,7 +160,7 @@ extension DayHeaderView: PagingScrollViewDelegate {
     leftView.startDate = activeView.startDate.add(TimeChunk.dateComponents(weeks: -1))
     rightView.startDate = activeView.startDate.add(TimeChunk.dateComponents(weeks: 1))
 
-    state?.client(client: self, didMoveTo: activeView.selectedDate!)
+    state?.client(client: self, didMoveTo: activeView.selectedDate ?? Date())
 
     /// Update date symbols for weekly content changing.
     /// check if the 1st day of content is today.

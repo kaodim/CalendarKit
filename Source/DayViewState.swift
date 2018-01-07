@@ -22,8 +22,7 @@ public class DayViewState {
 
   public func client(client: DayViewStateUpdating, didMoveTo date: Date) {
     let date = date.dateOnly()
-    notify(clients: allClientsWithout(client: client),
-           moveTo: date)
+    notify(clients: allClientsWithout(client: client), moveTo: date)
     selectedDate = date
   }
 

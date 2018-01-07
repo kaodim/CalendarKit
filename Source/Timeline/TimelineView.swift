@@ -49,14 +49,14 @@ public class TimelineView: UIView, ReusableView {
   var horizontalEventInset: CGFloat = 3
 
   var fullHeight: CGFloat {
-    return verticalInset * 2 + verticalDiff * 24
+    return verticalInset * 2 + verticalDiff * CGFloat(times.count)
   }
 
   var calendarWidth: CGFloat {
     return bounds.width - leftInset
   }
     
-  var is24hClock = false {
+  var dateStyle: DateStyle = .sixteenHour {
     didSet {
       setNeedsDisplay()
     }
@@ -68,13 +68,10 @@ public class TimelineView: UIView, ReusableView {
     configure()
   }
 
-  var times: [String] {
-    return is24hClock ? _24hTimes : _12hTimes
+  var times: [DateTime] {
+    return Generator.timeStrings16H()
   }
 
-  fileprivate lazy var _12hTimes: [String] = Generator.timeStrings12H()
-  fileprivate lazy var _24hTimes: [String] = Generator.timeStrings24H()
-  
   fileprivate lazy var longPressGestureRecognizer: UILongPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
 
   var isToday: Bool {
@@ -107,7 +104,7 @@ public class TimelineView: UIView, ReusableView {
       // Get timeslot of gesture location
       let pressedLocation = gestureRecognizer.location(in: self)
       let percentOfHeight = (pressedLocation.y - verticalInset) / (bounds.height - (verticalInset * 2))
-      let pressedAtHour: Int = Int(24 * percentOfHeight)
+      let pressedAtHour: Int = Int(CGFloat(times.count) * percentOfHeight)
       delegate?.timelineView(self, didLongPressAt: pressedAtHour)
     }
   }
@@ -115,18 +112,7 @@ public class TimelineView: UIView, ReusableView {
   public func updateStyle(_ newStyle: TimelineStyle) {
     style = newStyle.copy() as! TimelineStyle
     nowLine.updateStyle(style.timeIndicator)
-    
-    switch style.dateStyle {
-      case .twelveHour:
-        is24hClock = false
-        break
-      case .twentyFourHour:
-        is24hClock = true
-        break
-      default:
-        is24hClock = Locale.autoupdatingCurrent.uses24hClock()
-        break
-    }
+    dateStyle = style.dateStyle
     
     backgroundColor = style.backgroundColor
     setNeedsDisplay()
@@ -146,46 +132,60 @@ public class TimelineView: UIView, ReusableView {
       NSAttributedStringKey.font: style.font
     ]
 
-    for (i, time) in times.enumerated() {
+    for (i, time) in times.map({ $0.respresation }).enumerated() {
       let iFloat = CGFloat(i)
-      let context = UIGraphicsGetCurrentContext()
-      context!.interpolationQuality = .none
-      context?.saveGState()
-      context?.setStrokeColor(self.style.lineColor.cgColor)
-      context?.setLineWidth(onePixel)
-      context?.translateBy(x: 0, y: 0.5)
+      let lineContext = UIGraphicsGetCurrentContext()
+      lineContext?.interpolationQuality = .none
+      lineContext?.saveGState()
+      lineContext?.setStrokeColor(self.style.lineColor.cgColor)
+      lineContext?.setLineWidth(onePixel)
+      lineContext?.translateBy(x: 0, y: 0.5)
 
       /// Draw horizontal line
       let targetY = verticalInset + iFloat * verticalDiff
-      context?.beginPath()
-      context?.move(to: CGPoint(x: 0, y: targetY))
-      context?.addLine(to: CGPoint(x: (bounds).width, y: targetY))
-      context?.strokePath()
-      context?.restoreGState()
+      lineContext?.beginPath()
+      lineContext?.move(to: CGPoint(x: 0, y: targetY))
+      lineContext?.addLine(to: CGPoint(x: (bounds).width, y: targetY))
+      lineContext?.strokePath()
+      lineContext?.restoreGState()
 
       let fontSize = style.font.pointSize
       let timeRect = CGRect(
         x: 0,
         y: iFloat * verticalDiff + verticalInset + 5.0,
-        width: leftInset - 8,
+        width: leftInset,
         height: fontSize + 2
       )
       let timeString = NSString(string: time)
       timeString.draw(in: timeRect, withAttributes: attributes)
     }
 
+    /// Draw closure horizontal line
+    let closureHorizontalContext = UIGraphicsGetCurrentContext()
+    let targetY = fullHeight - verticalInset
+    closureHorizontalContext?.interpolationQuality = .none
+    closureHorizontalContext?.saveGState()
+    closureHorizontalContext?.setStrokeColor(self.style.lineColor.cgColor)
+    closureHorizontalContext?.setLineWidth(onePixel)
+    closureHorizontalContext?.translateBy(x: 0, y: 0.5)
+    closureHorizontalContext?.beginPath()
+    closureHorizontalContext?.move(to: CGPoint(x: 0, y: targetY))
+    closureHorizontalContext?.addLine(to: CGPoint(x: (bounds).width, y: targetY))
+    closureHorizontalContext?.strokePath()
+    closureHorizontalContext?.restoreGState()
+
     /// Draw vertical line
-    let context = UIGraphicsGetCurrentContext()
-    context!.interpolationQuality = .none
-    context?.saveGState()
-    context?.setStrokeColor(self.style.lineColor.cgColor)
-    context?.setLineWidth(onePixel)
-    context?.translateBy(x: 0, y: 0.5)
-    context?.beginPath()
-    context?.move(to: CGPoint(x: leftInset, y: verticalInset))
-    context?.addLine(to: CGPoint(x: leftInset, y: bounds.height - verticalInset))
-    context?.strokePath()
-    context?.restoreGState()
+    let verticalLineContext = UIGraphicsGetCurrentContext()
+    verticalLineContext?.interpolationQuality = .none
+    verticalLineContext?.saveGState()
+    verticalLineContext?.setStrokeColor(self.style.lineColor.cgColor)
+    verticalLineContext?.setLineWidth(onePixel)
+    verticalLineContext?.translateBy(x: 0, y: 0.5)
+    verticalLineContext?.beginPath()
+    verticalLineContext?.move(to: CGPoint(x: leftInset, y: verticalInset))
+    verticalLineContext?.addLine(to: CGPoint(x: leftInset, y: bounds.height - verticalInset))
+    verticalLineContext?.strokePath()
+    verticalLineContext?.restoreGState()
   }
 
   override public func layoutSubviews() {
@@ -199,13 +199,19 @@ public class TimelineView: UIView, ReusableView {
     if !isToday {
       nowLine.alpha = 0
     } else {
-      bringSubview(toFront: nowLine)
+      // Initialize date components with date values
+      guard 7...23 ~= currentTime.hour else {
+        /// If current time is not on the 7AM to 11PM range.
+        nowLine.alpha = 0
+        return
+      }
       nowLine.alpha = 1
+      bringSubview(toFront: nowLine)
       let size = CGSize(width: bounds.size.width, height: 20)
       let rect = CGRect(origin: .zero, size: size)
       nowLine.date = currentTime
       nowLine.frame = rect
-      nowLine.center.y = dateToY(currentTime)
+      nowLine.frame.origin.y = dateToY(currentTime, isNowLine: true)
     }
   }
 
@@ -285,15 +291,18 @@ public class TimelineView: UIView, ReusableView {
     return 1 / UIScreen.main.scale
   }
 
-  fileprivate func dateToY(_ date: Date) -> CGFloat {
+  fileprivate func dateToY(_ date: Date, isNowLine: Bool = false) -> CGFloat {
     if date.dateOnly() > self.date.dateOnly() {
       // Event ending the next day
-      return 24 * verticalDiff + verticalInset
+      return CGFloat(times.count) * verticalDiff + verticalInset
     } else if date.dateOnly() < self.date.dateOnly() {
       // Event starting the previous day
       return verticalInset
     } else {
-      let hourY = CGFloat(date.hour) * verticalDiff + verticalInset
+      guard let index = times.map({ $0.hour }).enumerated().filter({ $0.element == date.hour }).first?.offset else {
+        return 0
+      }
+      let hourY = CGFloat(index) * verticalDiff + (isNowLine ? 0 : verticalInset)
       let minuteY = CGFloat(date.minute) * verticalDiff / 60
       return hourY + minuteY
     }
