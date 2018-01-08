@@ -46,6 +46,7 @@ class DaySelector: UIView, ReusableView {
   var dateLabelWidth: CGFloat = 35
 
   var dateLabels = [DateLabel]()
+  var symbolLabels = [DaySymbolLabel]()
 
   init(startDate: Date = Date(), daysInWeek: Int = 7) {
     self.startDate = startDate.dateOnly()
@@ -69,19 +70,22 @@ class DaySelector: UIView, ReusableView {
 
   func initializeViews() {
     for _ in 1...daysInWeek {
+      let symbolLabel = DaySymbolLabel()
       let label = DateLabel()
+      symbolLabels.append(symbolLabel)
       dateLabels.append(label)
+      addSubview(symbolLabel)
       addSubview(label)
 
-      let recognizer = UITapGestureRecognizer(target: self,
-        action: #selector(DaySelector.dateLabelDidTap(_:)))
+      let recognizer = UITapGestureRecognizer(target: self, action: #selector(dateLabelDidTap(_:)))
       label.addGestureRecognizer(recognizer)
     }
   }
 
   func configure() {
-    for (increment, label) in dateLabels.enumerated() {
-      label.date = startDate.add(TimeChunk.dateComponents(days: increment))
+    for (increment, label) in zip(symbolLabels, dateLabels).enumerated() {
+      label.0.date = startDate.add(TimeChunk.dateComponents(days: increment))
+      label.1.date = startDate.add(TimeChunk.dateComponents(days: increment))
     }
   }
 
@@ -93,7 +97,8 @@ class DaySelector: UIView, ReusableView {
   }
 
   func prepareForReuse() {
-    dateLabels.forEach {$0.selected = false}
+    symbolLabels.forEach { $0.selected = false }
+    dateLabels.forEach { $0.selected = false }
   }
 
   override func layoutSubviews() {
@@ -102,16 +107,17 @@ class DaySelector: UIView, ReusableView {
     per /= dateLabelsCount
     let minX = per / 2
 
-    for (i, label) in dateLabels.enumerated() {
-      let frame = CGRect(x: minX + (dateLabelWidth + per) * CGFloat(i), y: 0,
-        width: dateLabelWidth, height: 25.0)
-      label.frame = frame
+    for (i, label) in zip(symbolLabels, dateLabels).enumerated() {
+      let symbolFrame = CGRect(x: minX + (dateLabelWidth + per) * CGFloat(i), y: 0, width: dateLabelWidth, height: 15.0)
+      let dateFrame = CGRect(x: minX + (dateLabelWidth + per) * CGFloat(i), y: 15, width: dateLabelWidth, height: 20.0)
+      label.0.frame = symbolFrame
+      label.1.frame = dateFrame
     }
   }
 
   @objc func dateLabelDidTap(_ sender: UITapGestureRecognizer) {
     if let label = sender.view as? DateLabel {
       delegate?.dateSelectorDidSelectDate(label.date)
-    }
+    } 
   }
 }

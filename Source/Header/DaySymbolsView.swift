@@ -44,7 +44,7 @@ class DaySymbolsView: UIView {
     configure()
   }
 
-  func configure(isOnCurrentWeek: Bool = true) {
+  func configure() {
     let daySymbols = calendar.veryShortWeekdaySymbols
     let weekendMask = [true] + [Bool](repeating: false, count: 5) + [true]
     var weekDays = Array(zip(daySymbols, weekendMask))
@@ -54,13 +54,6 @@ class DaySymbolsView: UIView {
       label.font = style.font
       label.text = weekDays[index].0
       label.textColor = style.notTodayColor
-      /*
-      /// Check if on current week & on first index.
-      if isOnCurrentWeek, (index == 0) {
-        label.textColor = style.todayColor
-      } else {
-        label.textColor = style.notTodayColor
-      }*/
     }
   }
 

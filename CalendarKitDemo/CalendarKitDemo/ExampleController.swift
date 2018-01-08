@@ -52,10 +52,10 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
     let calendarStyle = CalendarStyle()
     calendarStyle.header.backgroundColor = .white
     calendarStyle.header.daySymbols.todayColor = .red
-    calendarStyle.header.daySymbols.font = UIFont.systemFont(ofSize: 15.0)
+    calendarStyle.header.daySymbols.font = UIFont.systemFont(ofSize: 13.0)
     calendarStyle.header.daySelector.todayTextColor = .red
-    calendarStyle.header.daySelector.activeFont = UIFont.systemFont(ofSize: 18.0)
-    calendarStyle.header.daySelector.inactiveFont = UIFont.boldSystemFont(ofSize: 18.0)
+    calendarStyle.header.daySelector.textColor = .gray
+    calendarStyle.header.daySelector.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
     calendarStyle.header.stripeIndicator.color = .red
     calendarStyle.timeline.timeIndicator.color = .red
     calendarStyle.timeline.lineColor = .lightGray

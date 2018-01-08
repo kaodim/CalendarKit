@@ -1,11 +1,17 @@
-import UIKit
-import DateToolsSwift
+//
+//  DaySymbolLabel.swift
+//  CalendarKit
+//
+//  Created by Luqman Fauzi on 08/01/2018.
+//
 
-class DateLabel: UILabel {
-    
+import UIKit
+
+class DaySymbolLabel: UILabel {
+
   var date: Date! {
     didSet {
-      text = String(date.day)
+      text = date.format(with: "EEEEE")
       updateState()
     }
   }
@@ -16,7 +22,7 @@ class DateLabel: UILabel {
     }
   }
 
-  var style = DaySelectorStyle()
+  var style = DaySymbolsStyle()
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -28,31 +34,20 @@ class DateLabel: UILabel {
     configure()
   }
 
-  override func layoutSubviews() {
-    layer.cornerRadius = bounds.height / 2
-  }
- 
   func configure() {
     isUserInteractionEnabled = true
     textAlignment = .center
     clipsToBounds = true
   }
 
-  func updateStyle(_ newStyle: DaySelectorStyle) {
+  func updateStyle(_ newStyle: DaySymbolsStyle) {
     style = newStyle
     updateState()
   }
 
   func updateState() {
-    let today = Date().dateOnly()
-    let isPreviousDay: Bool = date.dateOnly().isEarlier(than: today)
-    if isPreviousDay {
-      textColor = style.previousDayTextColor
-    } else {
-      textColor = date.isToday ? style.todayTextColor : style.textColor
-    }
+    textColor = date.isToday ? style.todayColor : style.notTodayColor
     font = style.font
-    backgroundColor = style.backgroundColor
   }
 
   func animate(){
