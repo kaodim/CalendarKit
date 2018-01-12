@@ -147,6 +147,7 @@ extension TimelinePagerView: PagingScrollViewDelegate {
     delegate?.timelinePager(timelinePager: self, willMoveTo: nextDate)
     state?.client(client: self, didMoveTo: nextDate)
     scrollToFirstEventIfNeeded()
+    scrollToCenterCurrentTimeIfNeeded()
     delegate?.timelinePager(timelinePager: self, didMoveTo: nextDate)
 
     // Update left & right views
@@ -168,6 +169,11 @@ extension TimelinePagerView: PagingScrollViewDelegate {
       let index = Int(timelinePager.currentScrollViewPage)
       timelinePager.reusableViews[index].scrollToFirstEvent()
     }
+  }
+
+  func scrollToCenterCurrentTimeIfNeeded() {
+    let index = Int(timelinePager.currentScrollViewPage)
+    timelinePager.reusableViews[index].scrollToCenterCurrentTimeIfNeeded()
   }
 }
 

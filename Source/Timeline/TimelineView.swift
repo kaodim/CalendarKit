@@ -34,8 +34,11 @@ public class TimelineView: UIView, ReusableView {
   var pool = ReusePool<EventView>()
 
   var firstEventYPosition: CGFloat? {
-    return eventDescriptors.sorted{$0.frame.origin.y < $1.frame.origin.y}
-      .first?.frame.origin.y
+    return eventDescriptors.sorted{$0.frame.origin.y < $1.frame.origin.y}.first?.frame.origin.y
+  }
+
+  var centerNowLineYPosition: CGFloat? {
+    return nowLine.center.y
   }
 
   lazy var nowLine: CurrentTimeIndicator = CurrentTimeIndicator()

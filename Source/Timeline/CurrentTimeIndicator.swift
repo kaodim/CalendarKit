@@ -19,8 +19,8 @@ class CurrentTimeIndicator: UIView {
     }
   }
 
+  var circle = UIView()
   fileprivate var timeLabel = UILabel()
-  fileprivate var circle = UIView()
   fileprivate var line = UIView()
 
   var style = CurrentTimeIndicatorStyle()

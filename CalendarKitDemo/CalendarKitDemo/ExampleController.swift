@@ -90,6 +90,7 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
   @objc func changeToCurrentDate() {
     let today = Date()
     dayView.state?.move(to: today)
+    dayView.scrollToCenterCurrentTimeIfNeeded()
   }
 
   @objc func presentDatePicker() {
