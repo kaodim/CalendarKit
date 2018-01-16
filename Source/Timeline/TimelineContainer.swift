@@ -19,7 +19,7 @@ class TimelineContainer: UIScrollView, ReusableView {
   }
 
   func scrollToCenterCurrentTimeIfNeeded() {
-    if let yNowLine = timeline.centerNowLineYPosition, (timeline.date.dateOnly() == timeline.currentTime.dateOnly()) {
+    if let yNowLine = timeline.centerNowLineYPosition {
       if yNowLine > bounds.height {
         /// Scroll to bottom content, if red line offset screen.
         let yTarget = contentSize.height - bounds.size.height
