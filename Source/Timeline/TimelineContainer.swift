@@ -22,9 +22,9 @@ class TimelineContainer: UIScrollView, ReusableView {
     setContentOffset(.zero, animated: true)
     animateNowRedLine()
   }
-
+ 
   func animateNowRedLine() {
-    UIView.animate(withDuration: 0.3, delay: 0.5, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.5, options: [.autoreverse], animations: {
+    UIView.animate(withDuration: 0.5, delay: 0.5, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.8, options: .curveEaseInOut, animations: {
       self.timeline.nowLine.circle.transform = CGAffineTransform(scaleX: 1.7, y: 1.7)
     }) { (isFinished) in
       if isFinished {
