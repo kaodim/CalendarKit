@@ -18,18 +18,9 @@ class TimelineContainer: UIScrollView, ReusableView {
     }
   }
 
-  func scrollToCenterCurrentTimeIfNeeded() {
-    if let yNowLine = timeline.centerNowLineYPosition {
-      if yNowLine > bounds.height {
-        /// Scroll to bottom content, if red line offset screen.
-        let yTarget = contentSize.height - bounds.size.height
-        setContentOffset(CGPoint(x: contentOffset.x, y: yTarget), animated: true)
-      } else {
-        /// Scroll to top content, if red line inset screen.
-        setContentOffset(.zero, animated: true)
-      }
-      animateNowRedLine()
-    }
+  func scrollToTopContent() {
+    setContentOffset(.zero, animated: true)
+    animateNowRedLine()
   }
 
   func animateNowRedLine() {

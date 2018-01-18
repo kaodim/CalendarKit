@@ -106,7 +106,7 @@ public class DayView: UIView {
   }
 
   public func scrollToCenterCurrentTimeIfNeeded() {
-    timelinePagerView.scrollToCenterCurrentTimeIfNeeded()
+    timelinePagerView.scrollToTopContent()
   }
 
   public func reloadData() {
