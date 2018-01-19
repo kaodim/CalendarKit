@@ -18,8 +18,14 @@ class TimelineContainer: UIScrollView, ReusableView {
     }
   }
 
-  func scrollToTopContent() {
-    setContentOffset(.zero, animated: true)
+  func scrollToParticularPosition() {
+    if let yToScroll = timeline.currentTimeAtTheTop, (timeline.date.dateOnly() == timeline.currentTime.dateOnly()) {
+      /// Scroll to current time
+      setContentOffset(CGPoint(x: contentOffset.x, y: yToScroll), animated: true)
+    } else {
+      /// Scroll to the top of content
+      setContentOffset(.zero, animated: true)
+    }
     animateNowRedLine()
   }
  

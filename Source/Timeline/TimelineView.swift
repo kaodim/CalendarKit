@@ -37,8 +37,8 @@ public class TimelineView: UIView, ReusableView {
     return eventDescriptors.sorted{$0.frame.origin.y < $1.frame.origin.y}.first?.frame.origin.y
   }
 
-  var centerNowLineYPosition: CGFloat? {
-    return nowLine.center.y
+  var currentTimeAtTheTop: CGFloat? {
+    return dateToY(currentTime, isNowLine: true)
   }
 
   lazy var nowLine: CurrentTimeIndicator = CurrentTimeIndicator()
