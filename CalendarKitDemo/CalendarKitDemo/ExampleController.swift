@@ -65,6 +65,11 @@ class ExampleController: DayViewController, DatePickerControllerDelegate {
     reloadData()
   }
 
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    dayView.scrollToCenterCurrentTimeIfNeeded()
+  }
+
   @objc func changeStyle() {
     var title: String!
     var style: CalendarStyle!
