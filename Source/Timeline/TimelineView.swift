@@ -129,10 +129,10 @@ public class TimelineView: UIView, ReusableView {
     mutableParagraphStyle.alignment = .center
     let paragraphStyle = mutableParagraphStyle.copy() as! NSParagraphStyle
 
-    let attributes: [NSAttributedStringKey : Any] = [
-      NSAttributedStringKey.paragraphStyle: paragraphStyle,
-      NSAttributedStringKey.foregroundColor: style.timeColor,
-      NSAttributedStringKey.font: style.font
+    let attributes: [NSAttributedString.Key : Any] = [
+        NSAttributedString.Key.paragraphStyle: paragraphStyle,
+        NSAttributedString.Key.foregroundColor: style.timeColor,
+        NSAttributedString.Key.font: style.font
     ]
 
     for (i, time) in times.map({ $0.respresation }).enumerated() {
@@ -209,7 +209,7 @@ public class TimelineView: UIView, ReusableView {
         return
       }
       nowLine.alpha = 1
-      bringSubview(toFront: nowLine)
+        bringSubviewToFront(nowLine)
       let size = CGSize(width: bounds.size.width, height: 20)
       let rect = CGRect(origin: .zero, size: size)
       nowLine.date = currentTime
